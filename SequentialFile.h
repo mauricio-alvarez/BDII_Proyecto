@@ -283,8 +283,77 @@ public:
           mainFile.close();
           return true;
      }
+     Rtitles search(string key){
+          fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
+          fstream mainFile(dataFileName, ios::in | ios::app | ios::binary);
+          fstream metaFile(metaFileName, ios::in | ios::app | ios::binary);
 
-     
+          Rtitles auxRecord, result;
+          long addressRecord;
+          int left = 0;metaFile.seekg(0,ios::end);
+          int right = metaFile.tellg()/5 - 1;
+
+          while (left <= right) {
+               int mid = left + (right - left) / 2;
+               metaFile.seekg(mid*5, ios::beg);
+               metaFile.read((char*)(&addressRecord), sizeof(long));
+               mainFile.seekg(addressRecord,ios::beg);
+               mainFile >> result;
+               if (result.getKey() == key) {
+                    result = auxRecord;
+               } else if (result.getKey() < key) {
+                    left = mid + 1;
+               } else {
+                    right = mid - 1;
+               }
+          }
+          //SI NO ENCONTRO EN EL MAIN BUSQUEDA EN EL AUXILIAR
+          if(result.id.empty()){
+               auxiliarFile.seekg(0, ios::beg);
+               while(auxiliarFile >> auxRecord){
+                    if(auxRecord.getKey() == key){
+                         result = auxRecord;
+                         break;
+                    }         
+               }
+          
+          }
+
+
+          auxiliarFile.close();
+          mainFile.close();
+          metaFile.close();
+          return result;
+     }
+     vector<Rtitles> rangeSearch(string begin_key, string end_key){
+          fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
+          fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
+          //VERIFICAR QUE AMBAS KEYS EXISTAN
+          Rtitles first = search(begin_key);
+          Rtitles last = search(end_key);
+          vector<Rtitles> range;
+
+          if(!first.id.empty() && !last.id.empty()){
+               while (true){
+                    range.push_back(first);
+                    if(first.getKey() == last.getKey()){break;};
+                    if(first.nextFile){
+                         mainFile.seekg(first.next);
+                         mainFile >> first;
+                    }else{
+                         auxiliarFile.seekg(first.next);
+                         auxiliarFile >> first;
+                    }    
+               }
+          }
+          mainFile.close();
+          auxiliarFile.close();
+          return range;
+     }
+     bool remove(){
+          
+          return true;
+     }
      void rebuilt(){
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
           fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
@@ -334,7 +403,10 @@ public:
                
           }
           // - CASO 2 (MAIN CONTIENE)
-          
+          else{
+
+          }
+
           metaFile.close();
           auxiliarFile.close();
           mainFile.close();
