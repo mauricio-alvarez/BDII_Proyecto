@@ -124,7 +124,7 @@ public:
 
           auxiliarFile.seekg(0, ios::beg);
           while(auxiliarFile >> aux_1Record){
-               if (aux_1Record.getKey() < record.getKey() && (result.id.empty() || aux_1Record.getKey() > result.getKey())) {
+               if (aux_1Record.getKey() < record.getKey() && (result.id.empty() || aux_1Record.getKey() > result.getKey()) && !aux_1Record.isDelete) {
                     result = aux_1Record;
                     position = auxiliarFile.tellg() - result.getSizeinFile();
                }
@@ -167,12 +167,14 @@ public:
 
           mainFile.close();
           metaFile.close();
+          
           return make_tuple(position, result);
      }
+
      
      bool add(Rtitles record){
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
-          fstream mainFile(dataFileName, ios::in | ios::app | ios::binary);
+          fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
           fstream metaFile(metaFileName, ios::in | ios::app | ios::binary);
           metaIndex newRecordIndex = {0,record.isDelete};
 
@@ -187,14 +189,15 @@ public:
           auxiliarFile.seekg(0,ios::end);
           mainFile.seekg(0,ios::end);
 
-          cout<<"MainFile: "<<mainFile.tellg()<<endl;
-          cout<<"AuxiliarFile: "<<auxiliarFile.tellg()<<endl;
+          cout<<"MainFile: "<<mainFile.tellg()<<"   "<<"AuxiliarFile: "<<auxiliarFile.tellg()<<endl;
           
           if(auxiliarFile.tellg() == 0 && mainFile.tellg() == 0){
                //Ambos vacios
+               
                auxiliarFile << record;
           }else if(auxiliarFile.tellg() != 0 && mainFile.tellg() == 0){
                //Main vacio
+               
                int address;
                Rtitles prevRecord;
                tie(address, prevRecord) = searchOnAuxiliar(record);
@@ -211,11 +214,13 @@ public:
                     record.next = prevRecord.next;
                     record.nextFile = prevRecord.nextFile;
                     auxiliarFile << record;
+                    //cout<<"Escribo :"<<record.id<<endl;
 
                     auxiliarFile.seekp(address);
                     prevRecord.next = newRegisterPosition;
                     prevRecord.nextFile = false;
                     auxiliarFile << prevRecord;
+                    //cout<<"Escribo :"<<prevRecord.id<<endl;
                }
 
           }else if(auxiliarFile.tellg() == 0 && mainFile.tellg() != 0){
@@ -224,17 +229,19 @@ public:
                Rtitles prevRecord;
                tie(address, prevRecord) = searchOnMain(record);
 
+               cout<<address<<endl;
+               cout<<prevRecord.id<<endl;
+
                if(address == -1){
                     record.next = 0;
                     record.nextFile = false;
-
                     auxiliarFile << record;
                }else{
                     record.next = prevRecord.next;
                     record.nextFile = prevRecord.nextFile;
                     auxiliarFile << record;
 
-                    mainFile.seekp(address,ios::beg);
+                    mainFile.seekp(address);
                     prevRecord.next = newRegisterPosition;
                     prevRecord.nextFile = false;
                     mainFile << prevRecord;
@@ -249,7 +256,11 @@ public:
 
                tie(addressBinary, prevRecordBinary) = searchOnMain(record);
                tie(addressLineal, prevRecordLineal) = searchOnAuxiliar(record);
+               
+               cout<<prevRecordBinary.id<<endl;
+               cout<<prevRecordLineal.id<<endl;
 
+               
                if(prevRecordBinary.id < prevRecordLineal.id){
                     record.next = prevRecordLineal.next;
                     record.nextFile = prevRecordLineal.nextFile;
@@ -260,24 +271,29 @@ public:
                     prevRecordLineal.nextFile = false;
                     auxiliarFile << prevRecordLineal;
                }else{
+                    
+                    cout<<prevRecordBinary.id<<endl;
+                    cout<<addressBinary<<endl;
+                    
                     record.next = prevRecordBinary.next;
                     record.nextFile = prevRecordBinary.nextFile;
+                    if(addressBinary==-1){
+                         record.next = 0;record.nextFile = true;
+                    }else{
+                         record.next = prevRecordBinary.next;record.nextFile = prevRecordBinary.nextFile;
+                    }
                     auxiliarFile << record;
 
                     mainFile.seekp(addressBinary,ios::beg);
                     prevRecordBinary.next = newRegisterPosition;
                     prevRecordBinary.nextFile = false;
                     mainFile << prevRecordBinary;
+                    
                }
-
+               
+               
           }
           
-          //mainFile.seekg(0,ios::end);newRecordIndex.position = mainFile.tellg();
-
-          //mainFile << record;metaFile << newRecordIndex;
-          
-          //auxiliarFile << record;
-
           metaFile.close();
           auxiliarFile.close();
           mainFile.close();
@@ -295,13 +311,15 @@ public:
 
           while (left <= right) {
                int mid = left + (right - left) / 2;
+
                metaFile.seekg(mid*5, ios::beg);
                metaFile.read((char*)(&addressRecord), sizeof(long));
                mainFile.seekg(addressRecord,ios::beg);
-               mainFile >> result;
-               if (result.getKey() == key) {
-                    result = auxRecord;
-               } else if (result.getKey() < key) {
+               mainFile >> auxRecord;
+
+               if (auxRecord.getKey() == key && !auxRecord.isDelete) {
+                    result = auxRecord;break;
+               } else if (auxRecord.getKey() < key) {
                     left = mid + 1;
                } else {
                     right = mid - 1;
@@ -311,7 +329,7 @@ public:
           if(result.id.empty()){
                auxiliarFile.seekg(0, ios::beg);
                while(auxiliarFile >> auxRecord){
-                    if(auxRecord.getKey() == key){
+                    if(auxRecord.getKey() == key && !auxRecord.isDelete){
                          result = auxRecord;
                          break;
                     }         
@@ -325,6 +343,52 @@ public:
           metaFile.close();
           return result;
      }
+     
+     tuple<int, bool, Rtitles> positionSearch(string key){
+          fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
+          fstream mainFile(dataFileName, ios::in | ios::app | ios::binary);
+          fstream metaFile(metaFileName, ios::in | ios::app | ios::binary);
+          bool filePath = true;
+          Rtitles auxRecord, result;
+          long addressRecord;
+          int left = 0;metaFile.seekg(0,ios::end);
+          int right = metaFile.tellg()/5 - 1;
+
+          while (left <= right) {
+               int mid = left + (right - left) / 2;
+               metaFile.seekg(mid*5, ios::beg);
+               metaFile.read((char*)(&addressRecord), sizeof(long));
+               mainFile.seekg(addressRecord,ios::beg);
+               mainFile >> auxRecord;
+               if (auxRecord.getKey() == key && !auxRecord.isDelete) {
+                    result = auxRecord;break;
+               } else if (auxRecord.getKey() < key) {
+                    left = mid + 1;
+               } else {
+                    right = mid - 1;
+               }
+          }
+          //SI NO ENCONTRO EN EL MAIN BUSQUEDA EN EL AUXILIAR
+          if(result.id.empty()){
+               auxiliarFile.seekg(0, ios::beg);
+               while(auxiliarFile >> auxRecord){
+                    if(auxRecord.getKey() == key && !auxRecord.isDelete){
+                         result = auxRecord;
+                         filePath = false;
+                         addressRecord = auxiliarFile.tellg() - result.getSizeinFile();
+                         break;
+                    }         
+               }
+          
+          }
+
+
+          auxiliarFile.close();
+          mainFile.close();
+          metaFile.close();
+          return make_tuple(addressRecord,filePath,result);
+     }
+     
      vector<Rtitles> rangeSearch(string begin_key, string end_key){
           fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
@@ -335,7 +399,9 @@ public:
 
           if(!first.id.empty() && !last.id.empty()){
                while (true){
-                    range.push_back(first);
+                    if(!first.isDelete){
+                         range.push_back(first);
+                    }
                     if(first.getKey() == last.getKey()){break;};
                     if(first.nextFile){
                          mainFile.seekg(first.next);
@@ -350,9 +416,32 @@ public:
           auxiliarFile.close();
           return range;
      }
-     bool remove(){
-          
-          return true;
+     bool remove(string key){
+          fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
+          fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
+          bool state;
+          int addressRecord;
+          Rtitles auxRecord;
+
+          tie(addressRecord,state,auxRecord) = positionSearch(key);
+          //Aseguromos que haya un registro con esa llave.
+
+          if(!auxRecord.id.empty()){
+               auxRecord.isDelete = true;
+               auxRecord.show();
+
+               //ACTUALIZAR PUNTEROS
+               if(state){
+                    mainFile.seekg(addressRecord);
+                    mainFile << auxRecord;
+               }else{
+                    auxiliarFile.seekg(addressRecord);
+                    auxiliarFile << auxRecord;
+               }
+          }else{throw("No se encontro un registro con esa llave.");state=false;}
+          auxiliarFile.close();
+          mainFile.close();
+          return state;
      }
      void rebuilt(){
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
@@ -370,23 +459,25 @@ public:
           //CASOS
           // - CASO 1 (MAIN VACIO)
           if(auxiliarFile.tellg() > 300 && mainFile.tellg() == 0){
+               cout<<"RECONSTRUCCION... "<<endl;
                auxiliarFile.seekg(0);
                while(auxiliarFile >> auxRecord){
                     counter+=1;
                     if(auxRecord.next < aux_1Record.next && auxRecord.next != -1){
                          aux_1Record = auxRecord;
-                    }    
-                    
+                    }
                }
+
                auxiliarFile.close();
                fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
+               cout<<aux_1Record.id<<endl;
 
                for (int i = 0; i < counter; i++){
                     newRecordIndex.isDelete = aux_1Record.isDelete;
                     newRecordIndex.position = mainFile.tellg();
 
                     auxiliarFile.seekg(aux_1Record.next);
-                    cout<<"Me muevo a: "<<aux_1Record.next<<endl;
+                    
                     if(aux_1Record.next != -1){
                          aux_1Record.next = mainFile.tellg() + aux_1Record.getSizeinFile();
                     }else{
@@ -396,16 +487,25 @@ public:
                     aux_1Record.nextFile = true;
 
                     mainFile << aux_1Record;
+                    
                     metaFile << newRecordIndex;
 
-                    auxiliarFile >> aux_1Record;          
+                    if(aux_1Record.next != -1){
+                         auxiliarFile >> aux_1Record;
+                    }else{break;}
+                              
                }
+               clearAuxiliar();
                
           }
           // - CASO 2 (MAIN CONTIENE)
           else{
 
           }
+          
+          //Borramos los datos que haya en el auxiliar
+          
+          
 
           metaFile.close();
           auxiliarFile.close();
@@ -438,7 +538,9 @@ public:
           mainFile.seekg(0);
           mainFile >> auxRecord;
           while (true){
-               auxRecord.show();
+               if(!auxRecord.isDelete){
+                    auxRecord.show();
+               }
                if(auxRecord.next == -1){break;};
                if(auxRecord.nextFile){
                     mainFile.seekg(auxRecord.next);
@@ -449,6 +551,10 @@ public:
                }    
           }
           mainFile.close();
+          auxiliarFile.close();
+     }
+     void clearAuxiliar(){
+          ofstream auxiliarFile(auxFileName, ios::trunc);
           auxiliarFile.close();
      }
 };
