@@ -1,150 +1,199 @@
-#include <iostream>
-#include <cmath>
+#include "Bucket.h"
 #include <vector>
-#include <bitset>
+#include <set>
 
-using namespace std;
-
-const size_t global_depth = 2;
-const size_t buckets = pow(2, global_depth);
-const size_t block_factor = 4;
-
-struct record
-{
-    int id;
-    // ...
-    record() {}
-    record(int id) : id(id) {}
-
-    int getKey() {
-        return id;
-    }
-
-    void display() {
-        cout << id << " ";
-    }
-};
-
-struct Bucket
-{
-    size_t local_depth;
-    size_t count;
-    record records[block_factor];
-    Bucket* next; // long
-
-    void display() {
-        for (size_t i = 0; i < count; i++) {
-            records[i].display();
-        }
-    }
-};
-
-class ExtendibleHashFile
+class ExtendibleHashFile 
 {
     private:
-    // Array of pointers to buckets
-    Bucket** directory; 
-
-
+        int global_depth, bucket_size;
+        vector<Bucket*> buckets; // Directory
+        int hash(int n);
+        int pairIndex(int bucket_no, int depth);
+        void grow();
+        void shrink();
+        void split(int bucket_no);
+        void merge(int bucket_no);
+        string bucket_id(int n);
     public:
-
-    ExtendibleHashFile() {
-        directory = new Bucket*[buckets];
-
-        // 0 -> 00 
-        Bucket* bucket_A = new Bucket();
-        bucket_A->local_depth = 2;
-        bucket_A->records[0] = record(4); // 100
-        bucket_A->records[1] = record(12); // 1100
-        bucket_A->records[2] = record(32); // 100000
-        bucket_A->records[3] = record(16); // 10000
-        bucket_A->next = nullptr;
-
-        bucket_A->count = 4;
-        
-        // 1 -> 01
-        Bucket* bucket_B = new Bucket();
-        bucket_B->local_depth = 2;
-        bucket_B->records[0] = record(1); // 01
-        bucket_B->records[1] = record(5); // 101
-        bucket_B->records[2] = record(21); // 10101
-        bucket_B->next = nullptr;
-        bucket_B->count = 3;
-
-        // 2 -> 10
-        Bucket* bucket_C = new Bucket();
-        bucket_C->local_depth = 2;
-        bucket_C->records[0] = record(10); // 1010
-        bucket_C->next = nullptr;
-        bucket_C->count = 1;
-
-        // 3 -> 11
-        Bucket* bucket_D = new Bucket();
-        bucket_D->local_depth = 2;
-        bucket_D->records[0] = record(15); // 1111
-        bucket_D->records[1] = record(7); // 111
-        bucket_D->records[2] = record(19); // 10011
-        bucket_D->next = nullptr;
-        bucket_D->count = 3;
-
-        directory[0] = bucket_A;
-        directory[1] = bucket_B;
-        directory[2] = bucket_C;
-        directory[3] = bucket_D;
-    }
-
-    string hash_function(int key) {
-        int index_bucket = key % buckets;
-        return bitset<global_depth>(index_bucket).to_string();
-    }
-
-    record search(int key) {
-        // Calculate the hash value of the key
-        string hash_value = hash_function(key);
-
-        // Find the bucket in the directory array
-        int bucket_index = bitset<global_depth>(hash_value).to_ulong();
-        Bucket* current_bucket = directory[bucket_index];
-
-        // Traverse the linked list of the bucket and search for the record with the given key
-        while (current_bucket != nullptr) {
-            for (int i = 0; i < block_factor; i++) {
-                if (current_bucket->records[i].getKey() == key) {
-                    // Record found, return it
-                    return current_bucket->records[i];
-                }
-            }
-            // Move to the next bucket in the linked list
-            current_bucket = current_bucket->next;
-        }
-
-        // Record not found, return a default record
-        return record();
-    }
-
-
-    void display() {
-        for (int i = 0; i < buckets; ++i) {
-            cout << bitset<global_depth>(i).to_string() << " -> ";
-            directory[i]->display();
-            cout << "\n";
-        }
-    }
+        ExtendibleHashFile(int depth, int bucket_size);
+        void insert(int key,string value,bool reinserted);
+        void remove(int key,int mode);
+        void update(int key, string value);
+        void search(int key);
+        void display(bool duplicates);
 };
 
 
+ExtendibleHashFile::ExtendibleHashFile(int global_depth, int bucket_size) : global_depth(global_depth), bucket_size(bucket_size)
+{
+    for (int i = 0 ; i < 1 << global_depth ; i++)
+    {
+        buckets.push_back(new Bucket(global_depth, bucket_size));
+    }
+}
 
-int main() {
-    vector<int> keys = {
-        23, 2, 4, 5, 9,
-        35, 8, 13, 16, 1, 20,
-        65, 40, 73, 74
-    };
+int ExtendibleHashFile::hash(int n)
+{
+    return n & ((1 << global_depth) - 1);
+}
 
-    ExtendibleHashFile hasher;
+int ExtendibleHashFile::pairIndex(int bucket_no, int depth)
+{
+    return bucket_no ^ (1 << (depth - 1));
+}
 
-    hasher.display();
+void ExtendibleHashFile::grow()
+{
+    for (int i = 0; i < 1 << global_depth; i++) {
+        buckets.push_back(buckets[i]);
+    }
+    global_depth++;
+}
 
+void ExtendibleHashFile::shrink()
+{
+    int i, flag = 1;
+    for(i = 0; i < buckets.size(); i++) {
+        if(buckets[i]->getDepth() == global_depth){
+            flag = 0;
+            return;
+        }
+    }
+    global_depth--;
+    
+    for (i = 0 ; i < 1 << global_depth ; i++ ) {
+        buckets.pop_back();
+    }
+}
 
-    return 0;
+void ExtendibleHashFile::split(int bucket_no)
+{
+    int local_depth,pair_index,index_diff,dir_size,i;
+    map<int, string> temp;
+    map<int, string>::iterator it;
+
+    local_depth = buckets[bucket_no]->increaseDepth();
+    if(local_depth>global_depth)
+        grow();
+    pair_index = pairIndex(bucket_no,local_depth);
+    buckets[pair_index] = new Bucket(local_depth,bucket_size);
+    temp = buckets[bucket_no]->copy();
+    buckets[bucket_no]->clear();
+    index_diff = 1<<local_depth;
+    dir_size = 1<<global_depth;
+    for( i=pair_index-index_diff ; i>=0 ; i-=index_diff )
+        buckets[i] = buckets[pair_index];
+    for( i=pair_index+index_diff ; i<dir_size ; i+=index_diff )
+        buckets[i] = buckets[pair_index];
+    for(it=temp.begin();it!=temp.end();it++)
+        insert((*it).first,(*it).second,1);
+}
+
+void ExtendibleHashFile::merge(int bucket_no)
+{
+    int local_depth,pair_index,index_diff,dir_size,i;
+
+    local_depth = buckets[bucket_no]->getDepth();
+    pair_index = pairIndex(bucket_no,local_depth);
+    index_diff = 1<<local_depth;
+    dir_size = 1<<global_depth;
+
+    if( buckets[pair_index]->getDepth() == local_depth )
+    {
+        buckets[pair_index]->decreaseDepth();
+        delete(buckets[bucket_no]);
+        buckets[bucket_no] = buckets[pair_index];
+        for( i=bucket_no-index_diff ; i>=0 ; i-=index_diff )
+            buckets[i] = buckets[pair_index];
+        for( i=bucket_no+index_diff ; i<dir_size ; i+=index_diff )
+            buckets[i] = buckets[pair_index];
+    }
+}
+
+string ExtendibleHashFile::bucket_id(int n)
+{
+    int d;
+    string s;
+    d = buckets[n]->getDepth();
+    s = "";
+    while(n>0 && d>0)
+    {
+        s = (n%2==0?"0":"1")+s;
+        n/=2;
+        d--;
+    }
+    while(d>0)
+    {
+        s = "0"+s;
+        d--;
+    }
+    return s;
+}
+
+void ExtendibleHashFile::insert(int key,string value,bool reinserted)
+{
+    int bucket_no = hash(key);
+    int status = buckets[bucket_no]->insert(key,value);
+
+    if (status == 1) {
+        if(!reinserted)
+            cout<<"Inserted key "<<key<<" in bucket "<<bucket_id(bucket_no)<<endl;
+        else
+            cout<<"Moved key "<<key<<" to bucket "<<bucket_id(bucket_no)<<endl;
+    } else if (status == 0) {
+        split(bucket_no);
+        insert(key,value,reinserted);
+    } else {
+        cout<<"Key "<<key<<" already exists in bucket "<<bucket_id(bucket_no)<<endl;
+    }
+}
+
+void ExtendibleHashFile::remove(int key, int mode)
+{
+    int bucket_no = hash(key);
+    if(buckets[bucket_no]->remove(key))
+        cout<<"Deleted key "<<key<<" from bucket "<<bucket_id(bucket_no)<<endl;
+    if(mode>0)
+    {
+        if(buckets[bucket_no]->isEmpty() && buckets[bucket_no]->getDepth()>1)
+            merge(bucket_no);
+    }
+    if(mode>1)
+    {
+        shrink();
+    }
+}
+
+void ExtendibleHashFile::update(int key, string value)
+{
+    int bucket_no = hash(key);
+    buckets[bucket_no]->update(key,value);
+}
+
+void ExtendibleHashFile::search(int key)
+{
+    int bucket_no = hash(key);
+    cout<<"Searching key "<<key<<" in bucket "<<bucket_id(bucket_no)<<endl;
+    buckets[bucket_no]->search(key);
+}
+
+void ExtendibleHashFile::display(bool duplicates)
+{
+    int i,j,d;
+    string s;
+    set<string> shown;
+    cout<<"Global depth : "<<global_depth<<endl;
+    for(i=0;i<buckets.size();i++)
+    {
+        d = buckets[i]->getDepth();
+        s = bucket_id(i);
+        if(duplicates || shown.find(s)==shown.end())
+        {
+            shown.insert(s);
+            for(j=d;j<=global_depth;j++)
+                cout<<" ";
+            cout<<s<<" => ";
+            buckets[i]->display();
+        }
+    }
 }
