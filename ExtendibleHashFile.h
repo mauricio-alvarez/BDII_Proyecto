@@ -16,7 +16,7 @@ class ExtendibleHashFile
         string bucket_id(int n);
     public:
         ExtendibleHashFile(int depth, int bucket_size);
-        void insert(int key,string value,bool reinserted);
+        void insert(int key, string value, bool reinserted);
         void remove(int key,int mode);
         void update(int key, string value);
         void search(int key);
@@ -26,8 +26,7 @@ class ExtendibleHashFile
 
 ExtendibleHashFile::ExtendibleHashFile(int global_depth, int bucket_size) : global_depth(global_depth), bucket_size(bucket_size)
 {
-    for (int i = 0 ; i < 1 << global_depth ; i++)
-    {
+    for (int i = 0 ; i < 1 << global_depth ; i++) {
         buckets.push_back(new Bucket(global_depth, bucket_size));
     }
 }
@@ -112,25 +111,22 @@ void ExtendibleHashFile::merge(int bucket_no)
 
 string ExtendibleHashFile::bucket_id(int n)
 {
-    int d;
-    string s;
-    d = buckets[n]->getDepth();
-    s = "";
-    while(n>0 && d>0)
-    {
-        s = (n%2==0?"0":"1")+s;
-        n/=2;
+    int d = buckets[n]->getDepth();
+    string s = "";
+    
+    while (n > 0 && d > 0) {
+        s = (n % 2 == 0 ? "0" : "1") + s;
+        n /= 2;
         d--;
     }
-    while(d>0)
-    {
-        s = "0"+s;
+    while (d > 0) {
+        s = "0" + s;
         d--;
     }
     return s;
 }
 
-void ExtendibleHashFile::insert(int key,string value,bool reinserted)
+void ExtendibleHashFile::insert(int key, string value, bool reinserted)
 {
     int bucket_no = hash(key);
     int status = buckets[bucket_no]->insert(key,value);
