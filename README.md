@@ -8,30 +8,33 @@
 
 ### **1. SEQUENTIAL FILE**
 
-### INSERCION
+### Insercion
+Para cada registro nuevo se verifica que no esten en el archivo llamando a al metodo * search() * . Se hace busqueda del maximo elemento menor en el archivo principal conplejidad * O(log(n)) * y tambien en el archivo auxliar Complejidad * O(k) *. Se hace el intercambio de punteros. Y se inserta en al auxliar file. Complejidad O(1).
+
+_**Para llamar a la funcion insercion: **_
+```
+bool add(Rtitles new_record){}
+```
+
+
+#### Busqueda
 ```
 Rtitles search(string key){}
 ```
 
 
-#### BUSQUEDA
+#### Eliminacion
+```
+Rtitles search(string key){}
+```
+
+#### Busqueda por rango
 ```
 Rtitles search(string key){}
 ```
 
 
-#### ELIMINACION
-```
-Rtitles search(string key){}
-```
-
-#### BUSQUEDA POR RANGO
-```
-Rtitles search(string key){}
-```
-
-
-#### RECONSTRUCCION
+#### Recontruccion
 ```
 Rtitles search(string key){}
 ```
