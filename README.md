@@ -6,36 +6,36 @@
 * Tecnicas de organizacion de archivos
 * Setup
 
-###**1. SEQUENTIAL FILE**
+### **1. SEQUENTIAL FILE**
 
-###INSERCION
+### INSERCION
 ```
 Rtitles search(string key){}
 ```
 
 
-####BUSQUEDA
+#### BUSQUEDA
 ```
 Rtitles search(string key){}
 ```
 
 
-####ELIMINACION
+#### ELIMINACION
 ```
 Rtitles search(string key){}
 ```
 
-####BUSQUEDA POR RANGO
-```
-Rtitles search(string key){}
-```
-
-
-####RECONSTRUCCION
+#### BUSQUEDA POR RANGO
 ```
 Rtitles search(string key){}
 ```
 
 
-###**2. HASH FILE**
+#### RECONSTRUCCION
+```
+Rtitles search(string key){}
+```
+
+
+### **2. HASH FILE**
 
