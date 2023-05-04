@@ -85,7 +85,7 @@ void remove(int key);
 
 Tiempos ejecutación del `Sequential File`
 
-<img src="chart_file.png">
+<img src="chart2.png">
 
 Tiempos ejecutación del `Extendible Hash File`
 

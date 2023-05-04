@@ -6,12 +6,12 @@ import numpy as np
 # Search [340, 261, 390, 402]
 
 # Sequential file (Search)
-x1 = np.array([10, 100, 1000, 10000])
-y1 = np.array([640, 1203, 2610, 7605])
+x1 = np.array([10, 100, 1000, 3000])
+y1 = np.array([640, 1203, 2610, 5605])
 
 # Sequential file (Insertion)
-x2 = np.array([10, 100, 1000, 10000])
-y2 = np.array([340, 1600, 5032, 16039])
+x2 = np.array([10, 100, 1000, 3000])
+y2 = np.array([340, 1600, 5032, 8039])
 
 plt.xscale("log")
 
