@@ -64,15 +64,8 @@ int main()
     int bucket_size = 5; 
     int initial_global_depth = 1;
 
-    // cout << "Bucket size : ";
-    // cin >> bucket_size;
-    // cout << "Initial global depth : ";
-    // cin >> initial_global_depth;
-
     ExtendibleHashFile hash(initial_global_depth, bucket_size);
     cout << endl << "Initialized ExtendibleHashFile structure" << endl;
-
-    // menu(hash);
 
     vector<Record> records = parseCSV("credits.csv");
 

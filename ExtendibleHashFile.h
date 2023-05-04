@@ -7,7 +7,7 @@ class ExtendibleHashFile
     private:
         int global_depth, bucket_size;
         vector<Bucket*> buckets; // Directory
-        int hash(int n);
+        int hash(int key);
         int pairIndex(int bucket_no, int depth);
         void grow();
         void shrink();
@@ -31,11 +31,12 @@ ExtendibleHashFile::ExtendibleHashFile(int global_depth, int bucket_size) : glob
     }
 }
 
-int ExtendibleHashFile::hash(int n)
+int ExtendibleHashFile::hash(int key)
 {
-    return n & ((1 << global_depth) - 1);
+    return key & ((1 << global_depth) - 1); // key % pow(2, global_depth);
 }
 
+// For merge and split
 int ExtendibleHashFile::pairIndex(int bucket_no, int depth)
 {
     return bucket_no ^ (1 << (depth - 1));

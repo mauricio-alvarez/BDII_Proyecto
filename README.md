@@ -74,7 +74,7 @@ Rtitles search(string key){}
 > Se aplica la función hash a la llave primaria del registro buscado que localiza su bucket correspondiente. Finalmente, se itera sobre el bucket para encontrar el dicho registro. La complejidad seria *O(1) + O(k)* donde *k* es el número de registros en el bucket.
 
 ### **Eliminación**
-Se aplica la función hash a la llave primaria del registro que se desea eliminar para localizar su bucket correspondiente. Se busca el registro en el bucket y se elimina del contenedor. Cuando el bucket queda completamente vacío, este se elimina. También, puede darse el caso que el tamaño del directorio se reduzca. 
+> Se aplica la función hash a la llave primaria del registro que se desea eliminar para localizar su bucket correspondiente. Se busca el registro en el bucket y se elimina del contenedor. Cuando el bucket queda completamente vacío, este se elimina. También, puede darse el caso que el tamaño del directorio se reduzca. 
 
 # **Experimentación**
 
