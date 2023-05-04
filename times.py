@@ -7,11 +7,11 @@ import numpy as np
 
 # Sequential file (Search)
 x1 = np.array([10, 100, 1000, 10000])
-y1 = np.array([340, 1600, 5032, 16039])
+y1 = np.array([640, 1203, 2610, 7605])
 
 # Sequential file (Insertion)
 x2 = np.array([10, 100, 1000, 10000])
-y2 = np.array([640, 1203, 2610, 7605])
+y2 = np.array([340, 1600, 5032, 16039])
 
 plt.xscale("log")
 
@@ -22,7 +22,7 @@ plt.ylabel("Tiempo de ejecución (microsegundos)")
 plt.plot(x1, y1, marker = 's', color = 'green')
 plt.plot(x2, y2, marker = 'o', color = 'blue')
 
-plt.legend(["Insert", "Search"])
+plt.legend(["Search", "Insert"])
 
 plt.grid()
 plt.savefig('chart2.png')
