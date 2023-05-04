@@ -1,34 +1,20 @@
 #include <iostream>
 #include <vector>
+#include "Credits.h"
 
 using namespace std;
-
-struct Record
-{
-    int id;
-    string name;
-
-    int getKey() const {
-        return id;
-    }
-};
-
-ostream& operator<<(ostream& os, const Record& record) {
-    os << "[" << record.getKey() << ", " << record.name << "]";
-    return os;
-}
 
 class Bucket 
 {
     private:
         int depth, size;
-        vector<Record> records; // vector<Record> records;
+        vector<Record> records;
         
     public:
         Bucket(int depth, int size);
-        int insert(const Record& new_record); // Record
+        int insert(const Record& new_record);
         int remove(int key);
-        int update(const Record& updated_record); // Record
+        int update(const Record& updated_record);
         void search(int key);
 
 
