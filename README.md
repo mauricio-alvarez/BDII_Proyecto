@@ -7,14 +7,14 @@ Primer proyecto de Base de Datos II
 
 
 ## **Tabla de contenidos**
+* Instalacion
 * Descripcion General
 * Tecnicas de organizacion de archivos
-* Instalacion
 
 
 
 
-### **1. SEQUENTIAL FILE**
+### **2. SEQUENTIAL FILE**
 
 ### **Insercion**
 > Para cada registro nuevo se verifica que no esten en el archivo llamando a al metodo *search()* . Se hace busqueda del maximo elemento menor en el archivo principal conplejidad *O(log(n))* y tambien en el archivo auxliar Complejidad *O(k)*. Se hace el intercambio de punteros. Y se inserta en al archivo auxliar. Complejidad O(1).
@@ -58,5 +58,5 @@ Rtitles search(string key){}
 ```
 
 
-### **2. HASH FILE**
+### **3. HASH FILE**
 
