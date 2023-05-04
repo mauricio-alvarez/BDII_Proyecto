@@ -13,11 +13,11 @@ Primer proyecto de Base de Datos II
 Implementar un `sequencial file` y un `extendible hash file` como técnicas de organización de archivos para la rápida ejecución de consultas SQL de inserción, búsqueda y eliminación.
 
 **Dominio de datos**:
-Se han utilizado dos tablas en formato csv descargadas de la plataforma `Kaggle`.
+Se han utilizado dos datasets en formato csv descargadas de la plataforma `Kaggle`.
 - `credits.csv`
 - `titles.csv`
 
-**Resultado esperado**: Con la implementación las técnicas mencionadas se espera un mejor performace en la ejecución de consultas básicas SQL. 
+**Resultado esperado**: Con la implementación las técnicas mencionadas se espera un mejor performace en la ejecución de consultas básicas SQL. Esto implica que la solicitud de datos sea mas rápida a diferencia de realizar un escaneo completo de los archivos. 
 
 # **Técnicas de organización de archivos**
 
@@ -83,7 +83,11 @@ void remove(int key);
 
 # **Experimentación**
 
-Tiempos ejecutación del Extendible Hash File 
+Tiempos ejecutación del `Sequential File`
+
+<img src="chart2.png">
+
+Tiempos ejecutación del `Extendible Hash File`
 
 <img src="chart.png">
 

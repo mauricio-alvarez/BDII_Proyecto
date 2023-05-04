@@ -5,13 +5,13 @@ import numpy as np
 # Insertion [358, 373, 2610, 383]
 # Search [340, 261, 390, 402]
 
-# Hash File (Insertion)
+# Sequential file (Insertion)
 x1 = np.array([10, 100, 1000, 10000])
-y1 = np.array([358, 373, 2610, 383])
+y1 = np.array([640, 1203, 2610, 7605])
 
-# Hash File (Search)
+# Sequential file (Search)
 x2 = np.array([10, 100, 1000, 10000])
-y2 = np.array([340, 261, 390, 402])
+y2 = np.array([340, 1600, 5032, 16039])
 
 plt.xscale("log")
 
