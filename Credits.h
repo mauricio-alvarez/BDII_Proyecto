@@ -2,6 +2,7 @@
 # define CREDITS_H
 
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -22,6 +23,12 @@ struct Record
 
     int getKey() const {
         return person_id;
+    }
+
+    string getAll() const {
+        stringstream ss;
+        ss << this;
+        return ss.str();
     }
 };
 
