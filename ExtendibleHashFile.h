@@ -19,7 +19,7 @@ class ExtendibleHashFile
         void insert(const Record& new_record, bool reinserted);
         void remove(int key, int mode);
         void update(const Record& updated_record);
-        void search(int key);
+        Record search(int key);
         void display(bool duplicates);
 };
 
@@ -160,15 +160,15 @@ void ExtendibleHashFile::insert(const Record& new_record, bool reinserted)
 void ExtendibleHashFile::remove(int key, int mode)
 {
     int bucket_no = hash(key);
-    if(buckets[bucket_no]->remove(key))
-        cout<<"Deleted key "<<key<<" from bucket "<<bucket_id(bucket_no)<<endl;
-    if(mode>0)
-    {
-        if(buckets[bucket_no]->isEmpty() && buckets[bucket_no]->getDepth()>1)
-            merge(bucket_no);
+    if (buckets[bucket_no]->remove(key)) {
+        cout << "Deleted key " << key << " from bucket " << bucket_id(bucket_no) << endl;
     }
-    if(mode>1)
-    {
+    if (mode > 0) {
+        if (buckets[bucket_no]->isEmpty() && buckets[bucket_no]->getDepth()>1) {
+            merge(bucket_no);
+        }
+    }
+    if (mode > 1) {
         shrink();
     }
 }
@@ -179,11 +179,11 @@ void ExtendibleHashFile::update(const Record& updated_record)
     buckets[bucket_no]->update(updated_record);
 }
 
-void ExtendibleHashFile::search(int key)
+Record ExtendibleHashFile::search(int key)
 {
     int bucket_no = hash(key);
     cout << "Searching key " << key << " in bucket " << bucket_id(bucket_no) << endl;
-    buckets[bucket_no]->search(key);
+    return buckets[bucket_no]->search(key);
 }
 
 void ExtendibleHashFile::display(bool duplicates)

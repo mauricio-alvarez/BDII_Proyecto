@@ -14,13 +14,19 @@ struct Record
     string character;
     string role;
 
+    Record() = default;
+
+    void setData() {
+        cin >> person_id >> id >> name >> character >> role;
+    }
+
     int getKey() const {
         return person_id;
     }
 };
 
 ostream& operator<<(ostream& os, const Record& record) {
-    os << "[" << record.getKey() << ", " << record.name << "]";
+    os << "[" << record.getKey() << ", " << record.id << ", " << record.name << ", " << record.character << ", " << record.role << "]";
     return os;
 }
 

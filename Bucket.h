@@ -15,8 +15,7 @@ class Bucket
         int insert(const Record& new_record);
         int remove(int key);
         int update(const Record& updated_record);
-        void search(int key);
-
+        Record search(int key);
 
         bool isFull();
         bool isEmpty();
@@ -81,18 +80,18 @@ int Bucket::update(const Record& updated_record)
     return 0;
 }
 
-void Bucket::search(int key)
+Record Bucket::search(int key)
 {
     vector<Record>::iterator it = records.begin();
 
     while (it != records.end()) {
         if (it->getKey() == key) {
-            cout << *it << endl;
-            return;
+            return *it;
         }
         ++it;
     }
     cout << "This key does not exists" << endl;
+    return Record();
 }
 
 bool Bucket::isFull()
