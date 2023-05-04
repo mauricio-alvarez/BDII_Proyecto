@@ -154,6 +154,29 @@ public:
           metaFile.close();
      }
 
+     void load(string data){
+          std::string line;
+          ifstream file(data);
+
+          while (std::getline(file, line)) {
+               std::stringstream ss(line);
+               Rtitles record;
+               std::getline(ss, record.id, ',');
+               std::getline(ss, record.title, ',');
+               std::getline(ss, record.type, ',');
+               ss >> record.realease_year;
+               ss.ignore();
+               ss >> record.runtime;
+               ss.ignore();
+               ss >> record.imdb_score;
+               ss.ignore();
+               ss >> record.imdb_votes;
+
+               add(record);
+               
+                    
+          }
+     }
      virtual ~SequentialFile(){};
 
      tuple<int, Rtitles> searchOnAuxiliar(Rtitles record){
