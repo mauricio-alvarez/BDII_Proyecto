@@ -372,7 +372,6 @@ public:
                }
           
           }
-          cout<<"FOUND: "<<result.id<<endl;
 
           auxiliarFile.close();
           mainFile.close();
