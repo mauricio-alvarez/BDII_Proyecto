@@ -2,17 +2,21 @@
 # **$${\color{White} BD \space II \space PROYECTO \space I }$$** 
 Primer proyecto de Base de Datos II
 
+
 ## **Tabla de contenidos**
 * Descripcion General
 * Tecnicas de organizacion de archivos
 * Instalacion
+
+
+
 
 ### **1. SEQUENTIAL FILE**
 
 ### **Insercion**
 > Para cada registro nuevo se verifica que no esten en el archivo llamando a al metodo *search()* . Se hace busqueda del maximo elemento menor en el archivo principal conplejidad *O(log(n))* y tambien en el archivo auxliar Complejidad *O(k)*. Se hace el intercambio de punteros. Y se inserta en al archivo auxliar. Complejidad O(1).
 
-__Note__ _**Para llamar a la funcion insercion:**_
+>__Note__ _**Para llamar a la funcion insercion:**_
 ```
 bool add(Rtitles new_record){}
 ```
