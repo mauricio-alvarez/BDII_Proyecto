@@ -85,7 +85,7 @@ void remove(int key);
 
 Tiempos ejecutación del Extendible Hash File 
 
-<img src="chart.png" width="400">
+<img src="chart.png">
 
 En promedio se observa que la inserción y búsqueda para esta técnica de organización es constante O(1).
 Notese que la fluctuación de tiempo en la inserción puede deberse el bucket split y posterior rehashing de los registros.
