@@ -61,27 +61,24 @@ using namespace std;
 
 int main()
 {
+    // INSERT INTO TABLE credits from file('credits.csv') using index hash;
     int bucket_size = 5; 
     int initial_global_depth = 1;
 
     ExtendibleHashFile hash(initial_global_depth, bucket_size);
-    cout << endl << "Initialized ExtendibleHashFile structure" << endl;
 
     vector<Record> records = parseCSV("credits.csv");
-
-    for (const Record& record : records) {
-        cout << record << endl;
-    }
-
-    cout << endl;
-
     for (const Record& record : records) {
         hash.insert(record, 0);
     }
 
-    hash.display(true);
+    // SELECT * FROM credits;
+    for (const Record& record : records) {
+        cout << record << endl;
+    }
+    cout << endl;
 
-
+    // SELECT * FROM credits WHERE person_id = 7302;
     int person_id;
     cout << "Search: "; 
     cin >> person_id;
