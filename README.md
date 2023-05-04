@@ -58,13 +58,6 @@ bool remove(string key){}
 vector<Rtitles> rangeSearch(string begin_key, string end_key){}
 ```
 
-
-### **Recontrucción**
-```cpp
-Rtitles search(string key){}
-```
-
-
 ## **EXTENDIBLE HASH FILE**
 
 ### **Inserción**
