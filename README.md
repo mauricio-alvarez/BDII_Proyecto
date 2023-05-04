@@ -10,7 +10,7 @@ Primer proyecto de Base de Datos II
 # **Introducción**
 
 **Objetivo general**:
-Implementar un `sequencial file` y un `extendible hash file` como técnicas de organización de archivos para la rápida ejecución de consultas SQL de inserción, búsqueda y eliminación.
+Implementar un `sequential file` y un `extendible hash file` como técnicas de organización de archivos para la rápida ejecución de consultas SQL de inserción, búsqueda y eliminación.
 
 **Dominio de datos**:
 Se han utilizado dos datasets en formato csv descargadas de la plataforma `Kaggle`.
