@@ -33,6 +33,9 @@ struct Rtitles{
      void show(){cout<<id<<" "<<title<<" "<<type<<" "<<realease_year<<" "<<runtime<<" "<<imdb_score<<" "<<imdb_votes<<" "<<next<<" "<<nextFile<<" "<<isDelete<<endl;}
      int getSize(){return id.length()+title.length()+type.length()+sizeof(long)*3+sizeof(bool)*2+sizeof(int)+sizeof(float);}
      int getSizeinFile(){return id.length()+title.length()+type.length()+sizeof(long)*3+sizeof(bool)*2+sizeof(int)*4+sizeof(float);}
+     string get_casting(){
+          return id + " " + title + " " + type + " " + to_string(realease_year)  + " " + to_string(runtime)  + " " + to_string(imdb_score) + " " + to_string(imdb_votes);
+     }
 };
 struct metaIndex{
      long position;
@@ -118,11 +121,11 @@ fstream& operator>>(fstream& is,Rtitles& rtitle){
 class SequentialFile{
 private:
      string dataFileName;
-     string auxFileName;
-     string metaFileName;
-     int deleteSeason = 0;
+     string auxFileName = "auxiliar.dat";
+     string metaFileName = "metadata.dat";
+     
 public:
-     SequentialFile(string _dataFile, string _auxFile, string _metaFile) : dataFileName(_dataFile), auxFileName(_auxFile), metaFileName(_metaFile){
+     SequentialFile(string _dataFile) : dataFileName(_dataFile){
           ofstream mainFile(dataFileName, ios::trunc);
           ofstream auxiliarFile(auxFileName, ios::trunc);
           ofstream metaFile(metaFileName, ios::trunc);
@@ -189,7 +192,8 @@ public:
      }
 
      bool add(Rtitles record){
-          if(!search(record.id).id.empty()){perror("Its not possible to add this element,it is repeat.");return false;}
+          if(!search(record.id).id.empty()){perror("Its not possible to add this element,it is repeat.");
+          return false;}
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
           fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
           fstream metaFile(metaFileName, ios::in | ios::app | ios::binary);
@@ -208,7 +212,7 @@ public:
           auxiliarFile.seekg(0,ios::end);
           mainFile.seekg(0,ios::end);
 
-          cout<<"[→] AGREGAR... "<<endl<<endl<<" Insert "<<record.getKey()<<", ";
+          cout<<"[→] AGREGAR... "<<" Insert "<<record.getKey()<<", ";
           if(auxiliarFile.tellg() == 0 && mainFile.tellg() == 0){            
                auxiliarFile << record;
           }else if(auxiliarFile.tellg() != 0 && mainFile.tellg() == 0){
@@ -219,7 +223,7 @@ public:
                tie(address, prevRecord) = searchOnAuxiliar(record);
                cout<<"[EVALUATION] Preview Record:"<<prevRecord.id<<endl;
                if(address == -1){
-                    //cout<<"Agregar"<<record.getKey()<<endl;
+
                     record.next = 0;
                     record.nextFile = false;
 
@@ -228,13 +232,13 @@ public:
                     record.next = prevRecord.next;
                     record.nextFile = prevRecord.nextFile;
                     auxiliarFile << record;
-                    //cout<<"Escribo :"<<record.id<<endl;
+
 
                     auxiliarFile.seekp(address);
                     prevRecord.next = newRegisterPosition;
                     prevRecord.nextFile = false;
                     auxiliarFile << prevRecord;
-                    //cout<<"Escribo :"<<prevRecord.id<<endl;
+
                }
 
           }else if(auxiliarFile.tellg() == 0 && mainFile.tellg() != 0){
@@ -255,8 +259,6 @@ public:
                     record.next = prevRecord.next;
                     record.nextFile = prevRecord.nextFile;
                     auxiliarFile << record;
-                    cout<<"Escribo "; 
-                    record.show();
                     mainFile.seekp(address);
                     prevRecord.next = newRegisterPosition;
                     prevRecord.nextFile = false;
@@ -370,7 +372,7 @@ public:
                }
           
           }
-
+          cout<<"FOUND: "<<result.id<<endl;
 
           auxiliarFile.close();
           mainFile.close();
@@ -436,8 +438,7 @@ public:
 
           tie(ansMainAddress, ansMainRecord) = searchOnMain(record);
           tie(ansAuxiAddress, ansAuxiRecord) = searchOnAuxiliar(record);
-          cout<<"M: "<<ansMainRecord.id<<endl;
-          cout<<"A: "<<ansAuxiRecord.id<<endl;
+
           if(ansMainRecord.next == address && ansMainAddress != -1 && ansMainRecord.nextFile == filePath){
                return make_tuple(ansMainAddress,true, ansMainRecord); 
           }else if(ansAuxiRecord.next == address && ansAuxiAddress != -1 && ansAuxiRecord.nextFile == filePath){
@@ -486,16 +487,9 @@ public:
           tie(addressRecord,state,auxRecord) = positionSearch(key);
           
           if(!auxRecord.id.empty()){
-               cout<<"[→] REMOVE... "<<endl;
-               cout<<boolalpha<<"Remove "<<auxRecord.getKey()<<" at "<<addressRecord<<",  "<<state<<endl;    
+               cout<<"[→] REMOVE... "<<auxRecord.getKey()<<" at "<<addressRecord<<",  "<<state<<endl;    
                
                tie(reciveAddress,reciveState,reciveRecord)=searchPreviusRecord(addressRecord,state,auxRecord);
-
-
-               cout<<reciveRecord.id<<endl;
-               cout<<reciveAddress<<endl;
-               cout<<reciveState<<endl;
-               
                
                if(reciveAddress != -1){
                     if(reciveState){
@@ -511,13 +505,11 @@ public:
                     }
                }
                auxRecord.isDelete = true;
-               auxRecord.show();
                
                if(state){
                     mainFile.seekg(addressRecord);
                     mainFile << auxRecord;
                }else{
-                    //cout<<"R2"<<addressRecord<<endl;
                     auxiliarFile.seekg(addressRecord);
                     auxiliarFile << auxRecord;
                }
