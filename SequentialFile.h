@@ -29,6 +29,8 @@ struct Rtitles{
      bool nextFile = false;
      bool isDelete = false;
 
+     
+
      string getKey(){return id;}
      void show(){cout<<id<<" "<<title<<" "<<type<<" "<<realease_year<<" "<<runtime<<" "<<imdb_score<<" "<<imdb_votes<<" "<<next<<" "<<nextFile<<" "<<isDelete<<endl;}
      int getSize(){return id.length()+title.length()+type.length()+sizeof(long)*3+sizeof(bool)*2+sizeof(int)+sizeof(float);}
@@ -36,6 +38,10 @@ struct Rtitles{
      string get_casting(){
           return id + " " + title + " " + type + " " + to_string(realease_year)  + " " + to_string(runtime)  + " " + to_string(imdb_score) + " " + to_string(imdb_votes);
      }
+
+
+
+
 };
 struct metaIndex{
      long position;
@@ -372,7 +378,6 @@ public:
                }
           
           }
-          cout<<"FOUND: "<<result.id<<endl;
 
           auxiliarFile.close();
           mainFile.close();
@@ -679,6 +684,62 @@ public:
           auxiliarFile.close();
      }
      
+     vector<Rtitles> showSome(int n){
+          fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
+          fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
+          Rtitles auxRecord, aux_1Record, minRecord;int counter =0;
+          
+          vector<Rtitles> nfirstRecords;
+
+          //SELECT FIRST RECORD IN MAIN
+          while(mainFile >> auxRecord){
+               if(!auxRecord.isDelete){break;}
+          }
+          //SELECT FIRST RECORD IN AUXILIAR
+          while (auxiliarFile >> aux_1Record){
+               if(aux_1Record.getKey() < minRecord.getKey() || minRecord.getKey().empty() && !aux_1Record.isDelete){minRecord = aux_1Record;}
+          }
+
+          if(minRecord.getKey() < auxRecord.getKey() || auxRecord.getKey().empty()){
+               auxRecord = minRecord;
+          }else if(minRecord.getKey() > auxRecord.getKey() || minRecord.getKey().empty()){
+               auxRecord = auxRecord;
+          }else{
+               return;
+          }
+          auxiliarFile.close();
+          auxiliarFile.open(auxFileName,ios::in | ios::out | ios::binary);
+
+          while (true){
+               try{
+                    nfirstRecords.push_back(auxRecord);
+                    if(counter==n){
+                         break;
+                    }
+                    counter+=1;
+                    if(auxRecord.next == -1){break;};
+                    if(auxRecord.nextFile){
+                         mainFile.seekg(auxRecord.next);
+                         mainFile >> auxRecord;
+                    }else{
+                         auxiliarFile.seekg(auxRecord.next);
+                         auxiliarFile >> auxRecord;
+                    }
+               }catch(...){
+                    throw("Ha ocurrido un error en la lectura de datos.");
+                    break;
+               }
+                 
+          }
+          
+          //FOLLOW POINTERS
+
+
+          mainFile.close();
+          auxiliarFile.close();
+          return nfirstRecords;
+     }
+
      void moveContent(Rtitles auxRecord){
           fstream tempMain("tempMain.dat", ios::app | ios::binary);
           fstream tempMeta("tempMeta.dat", ios::app | ios::binary);
