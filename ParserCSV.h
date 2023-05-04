@@ -24,7 +24,7 @@ vector<Record> parseCSV(const string& filename) {
     }
 
     string line;
-    int count = 100;
+    int count = 1000;
     getline(file, line);
 
     while (getline(file, line) and --count) {
