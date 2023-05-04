@@ -1,11 +1,11 @@
 
-# **BDII Proyecto 1** #
+# **$${\color{BD II PROYECTO I}Red}$$** 
 Primer proyecto de Base de Datos II
 
 ## **Tabla de contenidos**
-* !Descripcion General
-* !Tecnicas de organizacion de archivos
-$${\color{red}Red}$$
+* Descripcion General
+* Tecnicas de organizacion de archivos
+* Instalacion
 
 ### **1. SEQUENTIAL FILE**
 
