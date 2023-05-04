@@ -140,6 +140,20 @@ public:
           auxiliarFile.close();
           metaFile.close();
      }
+
+     SequentialFile(){};
+
+     void openFile(string _dataFile){
+          dataFileName = _dataFile;
+          ofstream mainFile(dataFileName, ios::trunc);
+          ofstream auxiliarFile(auxFileName, ios::trunc);
+          ofstream metaFile(metaFileName, ios::trunc);
+
+          mainFile.close();
+          auxiliarFile.close();
+          metaFile.close();
+     }
+
      virtual ~SequentialFile(){};
 
      tuple<int, Rtitles> searchOnAuxiliar(Rtitles record){
