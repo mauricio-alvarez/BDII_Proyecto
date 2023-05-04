@@ -35,7 +35,7 @@ ExtendibleHashFile::ExtendibleHashFile(int global_depth, int bucket_size) : glob
 
 int ExtendibleHashFile::hash(int key)
 {
-    return key & ((1 << global_depth) - 1); // key % pow(2, global_depth);
+    return key & ((1 << global_depth) - 1); // key % pow(2, global_depth)
 }
 
 // For merge and split
