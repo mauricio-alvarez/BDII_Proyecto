@@ -1,4 +1,7 @@
 
+[![](https://img.shields.io/badge/github-blue?style=for-the-badge)](https://github.com/hamzamohdzubair/redant)
+[![](https://img.shields.io/badge/book-blueviolet?style=for-the-badge)](https://hamzamohdzubair.github.io/redant/)
+[![](https://img.shields.io/badge/API-yellow?style=for-the-badge)](https://docs.rs/crate/redant/latest)
 # **$${\color{White} BD \space II \space PROYECTO \space I }$$** 
 Primer proyecto de Base de Datos II
 
@@ -25,7 +28,7 @@ bool add(Rtitles new_record){}
 ### **Busqueda**
 >Ya que cada registro es de lonngitud variable se opta por incorporar un archivo metadata al archivo principal con la ubicacion fisica de cada registro. De acuerdo al metadata se recorre el archivo principal aplicando el algoritmo regular de busqueda binaria. Si no se encuntra el archivo, se busca en el archivo auxiliar con busqueda lineal.
 
->_**Para llamar a la funcion busqueda:**_
+>__Note__ _**Para llamar a la funcion busqueda:**_
 ```
 Rtitles search(string key){}
 ```
@@ -34,7 +37,7 @@ Rtitles search(string key){}
 ### **Eliminacion**
 >Se ubica el ultimo registro registro anterior y se hace intercambio de punteros caso contrario solo se actuliza el estado del registro a -1. Es decir se aplica la estrategia del marcado.
 
-_**Para llamar a la funcion eliminar:**_
+>__Note__ _**Para llamar a la funcion eliminar:**_
 ```
 bool remove(string key){}
 ```
@@ -43,7 +46,7 @@ bool remove(string key){}
 > Aprovechando el soporte de busqueda por rango de la tecnica. Se ubica el primer elemento menor en el archivo principal o axuliar y se lee los registros siguientes, siguiendo los punteros.
 
 
-_**Para llamar a la funcion busqueda por rangos:**_
+>__Note__ _**Para llamar a la funcion busqueda por rangos:**_
 ```
 vector<Rtitles> rangeSearch(string begin_key, string end_key){}
 ```
