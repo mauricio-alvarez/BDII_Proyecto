@@ -1,5 +1,5 @@
 
-# **$${\color{BD II PROYECTO I}Red}$$** 
+# **$${\color{Yellow}BD II PROYECTO I}$$** 
 Primer proyecto de Base de Datos II
 
 ## **Tabla de contenidos**
