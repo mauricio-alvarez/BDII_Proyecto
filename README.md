@@ -1,7 +1,7 @@
 # **BDII Proyecto 1** #
 
 
-##**Tabla de contenidos**##
+## **Tabla de contenidos**
 * Descripcion General
 * Tecnicas de organizacion de archivos
 * Setup
