@@ -1,4 +1,5 @@
 #include "Bucket.h"
+#include "ParserCSV.h"
 #include <vector>
 #include <set>
 
@@ -21,6 +22,7 @@ class ExtendibleHashFile
         void update(const Record& updated_record);
         Record search(int key);
         void display(bool duplicates);
+        void load(string filename);
 };
 
 
@@ -204,5 +206,12 @@ void ExtendibleHashFile::display(bool duplicates)
             cout<<s<<" => ";
             buckets[i]->display();
         }
+    }
+}
+
+void ExtendibleHashFile::load(string filename) {
+    vector<Record> records = parseCSV(filename);
+    for (const Record& record : records) {
+        insert(record, 0);
     }
 }

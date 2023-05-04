@@ -1,5 +1,4 @@
 #include "ExtendibleHashFile.h"
-#include "ParserCSV.h"
 
 using namespace std;
 
@@ -13,10 +12,7 @@ int main()
 
     ExtendibleHashFile hash(initial_global_depth, bucket_size);
 
-    vector<Record> records = parseCSV("credits.csv");
-    for (const Record& record : records) {
-        hash.insert(record, 0);
-    }
+    hash.load("credits.csv");
 
     // SELECT * FROM credits WHERE person_id = 14740;
     // INSERT INTO TABLE credits (...);
