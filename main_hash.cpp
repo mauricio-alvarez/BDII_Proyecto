@@ -1,18 +1,6 @@
 #include "ExtendibleHashFile.h"
 
-// struct Record
-// {
-//     int id;
-//     // ...
-//     Record() {}
-//     Record(int id) : id(id) {}
-
-//     int getKey() const {
-//         return id;
-//     }
-// };
-
-void menu()
+void menu(ExtendibleHashFile& hash)
 {
     cout<<"--------------------"<<endl;
     cout<<"Enter queries in the following format :"<<endl;
@@ -23,17 +11,56 @@ void menu()
     cout<<"display"<<endl;
     cout<<"exit"<<endl;
     cout<<"--------------------"<<endl;
+
+    bool show_duplicate_buckets = 0;
+    int mode;
+    string choice;
+
+    Record record;
+
+    do
+    {
+        cout << endl;
+        cout << ">>> ";
+        cin >> choice;
+        if(choice == "insert")
+        {
+            cin >> record.id >> record.name;
+            cout << endl; 
+            hash.insert(record, 0);
+        }
+        else if(choice == "delete")
+        {
+            cin >> record.id >> mode;
+            cout << endl; 
+            hash.remove(record.id, mode);
+        }
+        else if(choice == "update")
+        {
+            cin >> record.id >> record.name;
+            cout<<endl; 
+            hash.update(record);
+        }
+        else if(choice == "search")
+        {
+            cin >> record.id;
+            cout << endl; 
+            hash.search(record.id);
+        }
+        else if(choice == "display")
+        {
+            cout << endl; 
+            hash.display(show_duplicate_buckets);
+        }
+    } while(choice != "exit");
 }
 
 int main()
 {
-    bool show_duplicate_buckets;
+
     int bucket_size, initial_global_depth;
-    int key, mode;
-    string choice, value;
 
     // Set show_duplicate_buckets to 1 to see all pointers instead of unique ones
-    show_duplicate_buckets = 0;
 
     cout << "Bucket size : ";
     cin >> bucket_size;
@@ -43,44 +70,8 @@ int main()
     ExtendibleHashFile hash(initial_global_depth, bucket_size);
     cout << endl << "Initialized ExtendibleHashFile structure"<<endl;
 
+    menu(hash);    
 
-    menu();    
-
-    do
-    {
-        cout << endl;
-        cout << ">>> ";
-        cin >> choice;
-        if(choice == "insert")
-        {
-            cin>>key>>value;
-            cout<<endl; 
-            hash.insert(key,value,0);
-        }
-        else if(choice == "delete")
-        {
-            cin >> key >> mode;
-            cout << endl; 
-            hash.remove(key,mode);
-        }
-        else if(choice == "update")
-        {
-            cin>>key>>value;
-            cout<<endl; 
-            hash.update(key,value);
-        }
-        else if(choice == "search")
-        {
-            cin>>key;
-            cout<<endl; 
-            hash.search(key);
-        }
-        else if(choice == "display")
-        {
-            cout << endl; 
-            hash.display(show_duplicate_buckets);
-        }
-    } while(choice!="exit");
 
     return 0;
 }

@@ -1,99 +1,122 @@
 #include <iostream>
-#include <map>
+#include <vector>
 
 using namespace std;
+
+struct Record
+{
+    int id;
+    string name;
+
+    int getKey() const {
+        return id;
+    }
+};
+
+ostream& operator<<(ostream& os, const Record& record) {
+    os << "[" << record.getKey() << ", " << record.name << "]";
+    return os;
+}
 
 class Bucket 
 {
     private:
         int depth, size;
-        map<int, string> values;
+        vector<Record> records; // vector<Record> records;
         
     public:
         Bucket(int depth, int size);
-        int insert(int key, string value);
+        int insert(const Record& new_record); // Record
         int remove(int key);
-        int update(int key, string value);
+        int update(const Record& updated_record); // Record
         void search(int key);
+
+
         bool isFull();
         bool isEmpty();
         int getDepth();
         int increaseDepth();
         int decreaseDepth();
-        map<int, string> copy();
+        vector<Record> copy();
         void clear();
         void display();
 };
 
 Bucket::Bucket(int depth, int size) : depth(depth), size(size) {}
 
-int Bucket::insert(int key, string value)
+int Bucket::insert(const Record& new_record)
 {
-    map<int,string>::iterator it;
-    it = values.find(key);
-    if(it!=values.end())
-        return -1;
-    if(isFull())
+    vector<Record>::iterator it = records.begin();
+    cout << "new_record.getKey() = " << new_record.getKey() << endl;
+
+    // Find record with the same key
+    while (it != records.end()) {
+        if (it->getKey() == new_record.getKey()) {
+            return -1;
+        }
+        ++it;
+    }
+
+    if (isFull()) {
         return 0;
-    values[key] = value;
+    }
+
+    records.push_back(new_record);
     return 1;
 }
 
 int Bucket::remove(int key)
 {
-    map<int,string>::iterator it;
-    it = values.find(key);
-    if(it!=values.end())
-    {
-        values.erase(it);
-        return 1;
+    vector<Record>::iterator it = records.begin();
+
+    while (it != records.end()) {
+        if (it->getKey() == key) {
+            records.erase(it);
+            return 1;
+        }
+        ++it;
     }
-    else
-    {
-        cout<<"Cannot remove : This key does not exists"<<endl;
-        return 0;
-    }
+    cout << "Cannot remove : This key does not exists" << endl;
+    return 0;
 }
 
-int Bucket::update(int key, string value)
+int Bucket::update(const Record& updated_record)
 {
-    map<int,string>::iterator it;
-    it = values.find(key);
-    if(it!=values.end())
-    {
-        values[key] = value;
-        cout<<"Value updated"<<endl;
-        return 1;
+    vector<Record>::iterator it = records.begin();
+
+    while (it != records.end()) {
+        if (it->getKey() == updated_record.getKey()) {
+            (*it) = updated_record; // Be careful, operator= is not declared
+            return 1;
+        }
+        ++it;
     }
-    else
-    {
-        cout<<"Cannot update : This key does not exists"<<endl;
-        return 0;
-    }
+    cout << "Cannot update : This key does not exists" << endl;
+    return 0;
 }
 
 void Bucket::search(int key)
 {
-    map<int,string>::iterator it;
-    it = values.find(key);
-    if(it!=values.end())
-    {
-        cout<<"Value = "<<it->second<<endl;
+    vector<Record>::iterator it = records.begin();
+
+    while (it != records.end()) {
+        if (it->getKey() == key) {
+            cout << *it << endl;
+            return;
+        }
+        ++it;
     }
-    else
-    {
-        cout<<"This key does not exists"<<endl;
-    }
+    cout << "This key does not exists" << endl;
 }
 
 bool Bucket::isFull()
 {
-    return values.size() == size;
+    return records.size() == size;
 }
 
 bool Bucket::isEmpty()
 {
-    return values.size() == 0;
+    return records.size() == 0;
 }
 
 int Bucket::getDepth()
@@ -113,21 +136,22 @@ int Bucket::decreaseDepth()
     return depth;
 }
 
-map<int, string> Bucket::copy()
+vector<Record> Bucket::copy()
 {
-    map<int, string> temp(values.begin(),values.end());
+    vector<Record> temp(records.begin(), records.end());
     return temp;
 }
 
 void Bucket::clear()
 {
-    values.clear();
+    records.clear();
 }
 
 void Bucket::display()
 {
-    map<int,string>::iterator it;
-    for(it=values.begin();it!=values.end();it++)
-        cout<<it->first<<" ";
-    cout<<endl;
+    vector<Record>::iterator it;
+    for(it = records.begin(); it != records.end(); it++) {
+        cout << *it << " ";
+    }
+    cout << endl;
 }

@@ -16,9 +16,9 @@ class ExtendibleHashFile
         string bucket_id(int n);
     public:
         ExtendibleHashFile(int depth, int bucket_size);
-        void insert(int key, string value, bool reinserted);
-        void remove(int key,int mode);
-        void update(int key, string value);
+        void insert(const Record& new_record, bool reinserted);
+        void remove(int key, int mode);
+        void update(const Record& updated_record);
         void search(int key);
         void display(bool duplicates);
 };
@@ -68,24 +68,35 @@ void ExtendibleHashFile::shrink()
 void ExtendibleHashFile::split(int bucket_no)
 {
     int local_depth,pair_index,index_diff,dir_size,i;
-    map<int, string> temp;
-    map<int, string>::iterator it;
+    vector<Record> temp;
+    vector<Record>::iterator it;
 
     local_depth = buckets[bucket_no]->increaseDepth();
-    if(local_depth>global_depth)
+
+    if (local_depth > global_depth) {
         grow();
+    }
+        
     pair_index = pairIndex(bucket_no,local_depth);
     buckets[pair_index] = new Bucket(local_depth,bucket_size);
+
     temp = buckets[bucket_no]->copy();
+
     buckets[bucket_no]->clear();
-    index_diff = 1<<local_depth;
-    dir_size = 1<<global_depth;
-    for( i=pair_index-index_diff ; i>=0 ; i-=index_diff )
+    index_diff = 1 << local_depth;
+    dir_size = 1 << global_depth;
+
+    for (i = pair_index - index_diff; i >= 0; i -= index_diff) {
         buckets[i] = buckets[pair_index];
-    for( i=pair_index+index_diff ; i<dir_size ; i+=index_diff )
+    }
+        
+    for(i = pair_index + index_diff; i < dir_size; i += index_diff) {
         buckets[i] = buckets[pair_index];
-    for(it=temp.begin();it!=temp.end();it++)
-        insert((*it).first,(*it).second,1);
+    }
+        
+    for(it = temp.begin(); it != temp.end(); it++) {
+        insert((*it), 1);
+    }  
 }
 
 void ExtendibleHashFile::merge(int bucket_no)
@@ -126,21 +137,22 @@ string ExtendibleHashFile::bucket_id(int n)
     return s;
 }
 
-void ExtendibleHashFile::insert(int key, string value, bool reinserted)
+void ExtendibleHashFile::insert(const Record& new_record, bool reinserted)
 {
-    int bucket_no = hash(key);
-    int status = buckets[bucket_no]->insert(key,value);
+    int bucket_no = hash(new_record.getKey());
+    int status = buckets[bucket_no]->insert(new_record);
 
     if (status == 1) {
-        if(!reinserted)
-            cout<<"Inserted key "<<key<<" in bucket "<<bucket_id(bucket_no)<<endl;
-        else
-            cout<<"Moved key "<<key<<" to bucket "<<bucket_id(bucket_no)<<endl;
+        if (!reinserted) {
+            cout << "Inserted key " << new_record.getKey() << " in bucket " << bucket_id(bucket_no) << endl;
+        } else {
+            cout << "Moved key " << new_record.getKey() << " to bucket " << bucket_id(bucket_no) << endl;
+        }
     } else if (status == 0) {
         split(bucket_no);
-        insert(key,value,reinserted);
+        insert(new_record, reinserted);
     } else {
-        cout<<"Key "<<key<<" already exists in bucket "<<bucket_id(bucket_no)<<endl;
+        cout << "Key " << new_record.getKey() << " already exists in bucket " << bucket_id(bucket_no) << endl;
     }
 }
 
@@ -160,26 +172,26 @@ void ExtendibleHashFile::remove(int key, int mode)
     }
 }
 
-void ExtendibleHashFile::update(int key, string value)
+void ExtendibleHashFile::update(const Record& updated_record)
 {
-    int bucket_no = hash(key);
-    buckets[bucket_no]->update(key,value);
+    int bucket_no = hash(updated_record.getKey());
+    buckets[bucket_no]->update(updated_record);
 }
 
 void ExtendibleHashFile::search(int key)
 {
     int bucket_no = hash(key);
-    cout<<"Searching key "<<key<<" in bucket "<<bucket_id(bucket_no)<<endl;
+    cout << "Searching key " << key << " in bucket " << bucket_id(bucket_no) << endl;
     buckets[bucket_no]->search(key);
 }
 
 void ExtendibleHashFile::display(bool duplicates)
 {
-    int i,j,d;
+    int i, j, d;
     string s;
     set<string> shown;
-    cout<<"Global depth : "<<global_depth<<endl;
-    for(i=0;i<buckets.size();i++)
+    cout << "Global depth : " << global_depth << endl;
+    for(i = 0; i < buckets.size(); i++)
     {
         d = buckets[i]->getDepth();
         s = bucket_id(i);
