@@ -1,11 +1,11 @@
-- ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) `#c5f015`
+
 # **BDII Proyecto 1** #
 Primer proyecto de Base de Datos II
 
 ## **Tabla de contenidos**
 * !Descripcion General
 * !Tecnicas de organizacion de archivos
-* !Setup
+$${\color{red}Red}$$
 
 ### **1. SEQUENTIAL FILE**
 
