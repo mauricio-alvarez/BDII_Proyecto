@@ -5,12 +5,12 @@
 # **$${\color{White} BD \space II \space PROYECTO \space I }$$** 
 Primer proyecto de Base de Datos II
 
-![](database.png "Text to show on mouseover")
+<img src="database.png" width="200">
 
 # **Introducción**
 
 **Objetivo general**:
-Implementar dos técnicas de organización de archivos para la rápida ejecución de consultas SQL de inserción, búsqueda y eliminación.
+Implementar un `sequencial file` y un `extendible hash file` como técnicas de organización de archivos para la rápida ejecución de consultas SQL de inserción, búsqueda y eliminación.
 
 **Dominio de datos**:
 Se han utilizado dos tablas en formato csv descargadas de la plataforma `Kaggle`.
@@ -65,7 +65,7 @@ Rtitles search(string key){}
 ```
 
 
-### **EXTENDIBLE HASH FILE**
+## **EXTENDIBLE HASH FILE**
 
 ### **Inserción**
 
@@ -75,8 +75,7 @@ Rtitles search(string key){}
 
 ### **Eliminación**
 
-
-### **Experimentación**
+# **Experimentación**
 
 
 
