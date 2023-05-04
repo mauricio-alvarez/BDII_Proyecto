@@ -454,18 +454,18 @@ public:
 
      }
      
-     vector<Rtitles> rangeSearch(string begin_key, string end_key){
+     vector<string> rangeSearch(string begin_key, string end_key){
           fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
           //VERIFICAR QUE AMBAS KEYS EXISTAN
           Rtitles first = search(begin_key);
           Rtitles last = search(end_key);
-          vector<Rtitles> range;
+          vector<string> range;
 
           if(!first.id.empty() && !last.id.empty()){
                while (true){
                     if(!first.isDelete){
-                         range.push_back(first);
+                         range.push_back(first.get_casting());
                     }
                     if(first.getKey() == last.getKey()){break;};
                     if(first.nextFile){
@@ -684,12 +684,12 @@ public:
           auxiliarFile.close();
      }
      
-     vector<Rtitles> showSome(int n){
+     vector<string> showSome(int n){
           fstream mainFile(dataFileName, ios::in | ios::out | ios::binary);
           fstream auxiliarFile(auxFileName,ios::in | ios::out | ios::binary);
           Rtitles auxRecord, aux_1Record, minRecord;int counter =0;
           
-          vector<Rtitles> nfirstRecords;
+          vector<string> nfirstRecords;
 
           //SELECT FIRST RECORD IN MAIN
           while(mainFile >> auxRecord){
@@ -705,14 +705,14 @@ public:
           }else if(minRecord.getKey() > auxRecord.getKey() || minRecord.getKey().empty()){
                auxRecord = auxRecord;
           }else{
-               return;
+               return nfirstRecords;
           }
           auxiliarFile.close();
           auxiliarFile.open(auxFileName,ios::in | ios::out | ios::binary);
 
           while (true){
                try{
-                    nfirstRecords.push_back(auxRecord);
+                    nfirstRecords.push_back(auxRecord.get_casting());
                     if(counter==n){
                          break;
                     }
