@@ -6,10 +6,12 @@
 Primer proyecto de Base de Datos II
 
 <img src="database.png" width="200">
-Introducción al `Proyecto`: https://drive.google.com/file/d/1-auEMNvIRbiHespnPApBNp5qlNwyF8bR/view?usp=share_link
+
+Introducción al Proyecto: https://drive.google.com/file/d/1-auEMNvIRbiHespnPApBNp5qlNwyF8bR/view?usp=share_link
 Explicación y uso del `Extendible Hash File`: https://drive.google.com/file/d/11JQki-cy1gmV7R9SYL1FayKPsuW50S0C/view?usp=sharing
 Explicación y uso del `Extendible Sequentia`l File:https://drive.google.com/file/d/1AhtniXcL9rfSksAgtFWR9XqoKynJoAF7/view?usp=sharing
 Explicación y demostración del uso de la GUI y del Parser SQL: https://drive.google.com/file/d/12GHRUrxvQkPq4pWBqPPOgtY-4bl0y7Ba/view?usp=share_link
+
 # **Introducción**
 
 **Objetivo general**:
